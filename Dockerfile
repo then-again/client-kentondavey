@@ -6,7 +6,7 @@ RUN npm ci
 FROM node:latest AS builder
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY app/ .
+COPY frontend/ .
 RUN npm run build
 
 FROM node:latest AS runner
