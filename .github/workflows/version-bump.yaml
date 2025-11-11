@@ -93,9 +93,9 @@ jobs:
           git tag ${{ steps.set_version.outputs.new_tag }}
           git push origin ${{ steps.set_version.outputs.new_tag }}
 
-      - name: Update Main Tag
+      - name: Update Latest Tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f main
-          git push origin -f main
+          git tag -f latest
+          git push origin -f latest
