@@ -21,68 +21,53 @@ jobs:
       - name: Get Previous Tag
         id: get_tag
         run: |
-          previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           echo "Previous tag: $previous_tag"
           echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
 
       - name: Validate Previous Tag Format
         run: |
-          if ! echo "${{ steps.get_tag.outputs.previous_tag }}" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "Error: Tag '${{ steps.get_tag.outputs.previous_tag }}' does not match format 'v0.0.0'. Please set a valid tag manually."
+          if ! echo "${{ steps.get_tag.outputs.previous_tag }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: Tag '${{ steps.get_tag.outputs.previous_tag }}' does not match format '0.0.0'. Please set a valid tag manually."
             exit 1
           fi
 
-      - name: Parse Previous Version
-        id: get_version
-        run: |
-          previous_tag=${{ steps.get_tag.outputs.previous_tag }}
-          version=${previous_tag#v}
-          IFS='.' read -r major minor patch <<< "$version"
-
-          echo "Major version: $major"
-          echo "Minor version: $minor"
-          echo "Patch version: $patch"
-
-          echo "major=$major" >> $GITHUB_OUTPUT
-          echo "minor=$minor" >> $GITHUB_OUTPUT
-          echo "patch=$patch" >> $GITHUB_OUTPUT
-
-      - name: Determine Version Increment Type
-        id: get_bump
+      - name: Determine Step Type
+        id: get_step
         run: |
           commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message"
 
-          if echo "$commit_message" | grep -q "(major)"; then
-            bump_version="major"
-          elif echo "$commit_message" | grep -q "(minor)"; then
-            bump_version="minor"
+          if echo "$commit_message" | grep -q "(minor)"; then
+            step="minor"
+          elif echo "$commit_message" | grep -q "(major)"; then
+            step="major"
           else
-            bump_version="patch"
+            step="patch"
           fi
 
-          echo "bump_version=$bump_version" >> $GITHUB_OUTPUT
+          echo "step=$step" >> $GITHUB_OUTPUT
 
-      - name: Calculate New Version
+      - name: Set New Tag
         id: set_version
         run: |
-          major=${{ steps.get_version.outputs.major }}
-          minor=${{ steps.get_version.outputs.minor }}
-          patch=${{ steps.get_version.outputs.patch }}
-          bump_version=${{ steps.get_bump.outputs.bump_version }}
+          step=${{ steps.get_step.outputs.step }}
 
-          if [ "$bump_version" = "major" ]; then
+          previous_tag=${{ steps.get_tag.outputs.previous_tag }}
+          IFS='.' read -r major minor patch <<< "$previous_tag"
+
+          if [ "$step" = "minor" ]; then
+            minor=$((minor + 1))
+            patch=0
+          elif [ "$step" = "major" ]; then
             major=$((major + 1))
             minor=0
-            patch=0
-          elif [ "$bump_version" = "minor" ]; then
-            minor=$((minor + 1))
             patch=0
           else
             patch=$((patch + 1))
           fi
 
-          new_tag="v${major}.${minor}.${patch}"
+          new_tag="${major}.${minor}.${patch}"
           echo "New tag: $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
@@ -91,7 +76,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create and Push New Semantic Tag
+      - name: Create and Push New Tag
         run: |
           git tag ${{ steps.set_version.outputs.new_tag }}
           git push origin ${{ steps.set_version.outputs.new_tag }}
