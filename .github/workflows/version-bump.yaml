@@ -27,8 +27,8 @@ jobs:
 
       - name: Validate Previous Tag Format
         run: |
-          if ! echo "${{ steps.get_tag.outputs.previous_tag }}" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "Error: Tag '${{ steps.get_tag.outputs.previous_tag }}' does not match format 'v0.0.0'. Please set a valid tag manually."
+          if ! echo "${{ steps.get_tag.outputs.previous_tag }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: Tag '${{ steps.get_tag.outputs.previous_tag }}' does not match format '0.0.0'. Please set a valid tag manually."
             exit 1
           fi
 
@@ -82,7 +82,7 @@ jobs:
             patch=$((patch + 1))
           fi
 
-          new_tag="v${major}.${minor}.${patch}"
+          new_tag="${major}.${minor}.${patch}"
           echo "New tag: $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
