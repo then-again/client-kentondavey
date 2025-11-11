@@ -21,7 +21,7 @@ jobs:
       - name: Get Previous Tag
         id: get_tag
         run: |
-          previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
           echo "Previous tag: $previous_tag"
           echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
 
