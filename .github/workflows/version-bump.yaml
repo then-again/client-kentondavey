@@ -32,21 +32,6 @@ jobs:
             exit 1
           fi
 
-      - name: Parse Previous Version
-        id: get_version
-        run: |
-          previous_tag=${{ steps.get_tag.outputs.previous_tag }}
-          version=${previous_tag#v}
-          IFS='.' read -r major minor patch <<< "$version"
-
-          echo "Major version: $major"
-          echo "Minor version: $minor"
-          echo "Patch version: $patch"
-
-          echo "major=$major" >> $GITHUB_OUTPUT
-          echo "minor=$minor" >> $GITHUB_OUTPUT
-          echo "patch=$patch" >> $GITHUB_OUTPUT
-
       - name: Determine Version Increment Type
         id: get_bump
         run: |
@@ -66,10 +51,10 @@ jobs:
       - name: Calculate New Version
         id: set_version
         run: |
-          major=${{ steps.get_version.outputs.major }}
-          minor=${{ steps.get_version.outputs.minor }}
-          patch=${{ steps.get_version.outputs.patch }}
           bump_version=${{ steps.get_bump.outputs.bump_version }}
+
+          previous_tag=${{ steps.get_tag.outputs.previous_tag }}
+          IFS='.' read -r major minor patch <<< "$previous_tag"
 
           if [ "$bump_version" = "major" ]; then
             major=$((major + 1))
