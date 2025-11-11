@@ -32,36 +32,36 @@ jobs:
             exit 1
           fi
 
-      - name: Determine Version Increment Type
-        id: get_bump
+      - name: Determine Step Type
+        id: get_step
         run: |
           commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message"
 
-          if echo "$commit_message" | grep -q "(major)"; then
-            bump_version="major"
-          elif echo "$commit_message" | grep -q "(minor)"; then
-            bump_version="minor"
+          if echo "$commit_message" | grep -q "(minor)"; then
+            step="minor"
+          elif echo "$commit_message" | grep -q "(major)"; then
+            step="major"
           else
-            bump_version="patch"
+            step="patch"
           fi
 
-          echo "bump_version=$bump_version" >> $GITHUB_OUTPUT
+          echo "step=$step" >> $GITHUB_OUTPUT
 
-      - name: Calculate New Version
+      - name: Set New Tag
         id: set_version
         run: |
-          bump_version=${{ steps.get_bump.outputs.bump_version }}
+          step=${{ steps.get_step.outputs.step }}
 
           previous_tag=${{ steps.get_tag.outputs.previous_tag }}
           IFS='.' read -r major minor patch <<< "$previous_tag"
 
-          if [ "$bump_version" = "major" ]; then
+          if [ "$step" = "minor" ]; then
+            minor=$((minor + 1))
+            patch=0
+          elif [ "$step" = "major" ]; then
             major=$((major + 1))
             minor=0
-            patch=0
-          elif [ "$bump_version" = "minor" ]; then
-            minor=$((minor + 1))
             patch=0
           else
             patch=$((patch + 1))
@@ -76,7 +76,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create and Push New Semantic Tag
+      - name: Create and Push New Tag
         run: |
           git tag ${{ steps.set_version.outputs.new_tag }}
           git push origin ${{ steps.set_version.outputs.new_tag }}
