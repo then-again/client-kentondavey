@@ -1,10 +1,8 @@
 name: Publish Production Image to GHCR
 
 on:
-  workflow_run:
-    workflows: ["Auto Version Bump"]
-    types:
-      - completed
+  repository_dispatch:
+    types: [publish_image]
 
 permissions:
   packages: write
@@ -17,22 +15,14 @@ env:
 
 jobs:
   publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download Tag Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: new_tag
-          run-id: ${{ github.event.workflow_run.id }}
-
-      - name: Read Tag from Artifact
-        id: read_tag
+      - name: Extract tag from dispatch event
+        id: get_tag
         run: |
-          TAG=$(cat new_tag/new_tag.txt)
+          TAG=${{ github.event.client_payload.tag }}
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Using tag: $TAG"
+          echo "Publishing image for tag: $TAG"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,17 +38,17 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          TAG_NAME=${{ steps.read_tag.outputs.tag }}
+          TAG_NAME=${{ steps.get_tag.outputs.tag }}
           docker build -t ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME .
 
       - name: Push Versioned Image
         run: |
-          TAG_NAME=${{ steps.read_tag.outputs.tag }}
+          TAG_NAME=${{ steps.get_tag.outputs.tag }}
           docker push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME
 
       - name: Push Latest Image
         run: |
-          TAG_NAME=${{ steps.read_tag.outputs.tag }}
+          TAG_NAME=${{ steps.get_tag.outputs.tag }}
           docker tag \
             ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME \
             ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:latest
