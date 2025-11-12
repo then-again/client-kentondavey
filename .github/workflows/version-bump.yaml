@@ -80,3 +80,12 @@ jobs:
         run: |
           git tag ${{ steps.set_version.outputs.new_tag }}
           git push origin ${{ steps.set_version.outputs.new_tag }}
+
+      - name: Create Tag Artifact
+        run: echo "${{ steps.set_version.outputs.new_tag }}" > new_tag.txt
+
+      - name: Upload Tag Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: new_tag
+          path: new_tag.txt

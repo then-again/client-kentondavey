@@ -21,15 +21,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Auto Version Bump artifacts
+      - name: Download Tag Artifact
         uses: actions/download-artifact@v4
         with:
+          name: new_tag
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Read tag from artifact
+      - name: Read Tag from Artifact
         id: read_tag
         run: |
-          TAG=$(cat new_tag.txt)
+          TAG=$(cat new_tag/new_tag.txt)
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Using tag: $TAG"
 
