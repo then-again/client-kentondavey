@@ -74,6 +74,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Create and Push New Tag
+        run: |
+          git tag ${{ steps.set_version.outputs.new_tag }}
+          git push origin ${{ steps.set_version.outputs.new_tag }}
+
+      - name: Update Latest Tag
+        run: |
+          git tag -f latest
+          git push origin -f latest
+
       - name: Trigger Publish Workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
