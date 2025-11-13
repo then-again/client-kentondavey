@@ -87,5 +87,6 @@ jobs:
     uses: ./.github/workflows/publish.yaml
     permissions:
       packages: write
+      contents: read
     with:
       tag: ${{ needs.update-version-tag.outputs.new_tag }}
