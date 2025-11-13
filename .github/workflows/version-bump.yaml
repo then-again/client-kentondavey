@@ -9,6 +9,7 @@ jobs:
   update-version-tag:
     runs-on: ubuntu-latest
     permissions:
+      packages: write
       contents: write
     outputs:
       new_tag: ${{ steps.set_version.outputs.new_tag }}
