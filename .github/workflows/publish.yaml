@@ -36,7 +36,7 @@ jobs:
         run: |
           TAG_NAME=${{ inputs.tag }}
           echo "Building Docker image for tag: $TAG_NAME"
-          docker build -t ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME .
+          docker build -t ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME ./frontend
 
       - name: Push Versioned Image
         run: |
