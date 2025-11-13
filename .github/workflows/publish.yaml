@@ -1,8 +1,11 @@
 name: Publish Production Image to GHCR
 
 on:
-  repository_dispatch:
-    types: [publish_image]
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 permissions:
   packages: write
@@ -17,13 +20,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract tag from dispatch event
-        id: get_tag
-        run: |
-          TAG=${{ github.event.client_payload.tag }}
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Publishing image for tag: $TAG"
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -38,17 +34,18 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          TAG_NAME=${{ steps.get_tag.outputs.tag }}
+          TAG_NAME=${{ inputs.tag }}
+          echo "Building Docker image for tag: $TAG_NAME"
           docker build -t ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME .
 
       - name: Push Versioned Image
         run: |
-          TAG_NAME=${{ steps.get_tag.outputs.tag }}
+          TAG_NAME=${{ inputs.tag }}
           docker push ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME
 
       - name: Push Latest Image
         run: |
-          TAG_NAME=${{ steps.get_tag.outputs.tag }}
+          TAG_NAME=${{ inputs.tag }}
           docker tag \
             ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:$TAG_NAME \
             ${{ env.REGISTRY }}/${{ env.ORG }}/${{ env.CONTAINER_NAME }}:latest
