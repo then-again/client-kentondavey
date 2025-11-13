@@ -1,0 +1,21 @@
+name: Production Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  version_bump:
+    uses: ./.github/workflows/auto-version-bump.yaml
+    permissions:
+      contents: write
+
+  publish:
+    needs: version_bump
+    uses: ./.github/workflows/publish.yaml
+    permissions:
+      packages: write
+      contents: read
+    with:
+      tag: ${{ needs.version_bump.outputs.new_tag }}
