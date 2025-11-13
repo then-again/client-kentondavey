@@ -1,9 +1,10 @@
 name: Auto Version Bump
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    outputs:
+      new_tag:
+        value: ${{ jobs.update-version-tag.outputs.new_tag }}
 
 jobs:
   update-version-tag:
@@ -81,12 +82,3 @@ jobs:
         run: |
           git tag ${{ steps.set_version.outputs.new_tag }}
           git push origin ${{ steps.set_version.outputs.new_tag }}
-
-  publish:
-    needs: update-version-tag
-    uses: ./.github/workflows/publish.yaml
-    permissions:
-      packages: write
-      contents: read
-    with:
-      tag: ${{ needs.update-version-tag.outputs.new_tag }}
