@@ -84,6 +84,6 @@ jobs:
 
   publish:
     needs: update-version-tag
-    uses: ./.github/workflows/publish.yml
+    uses: ./.github/workflows/publish.yaml
     with:
       tag: ${{ needs.update-version-tag.outputs.new_tag }}
