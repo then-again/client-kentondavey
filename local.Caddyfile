@@ -1,0 +1,7 @@
+{
+	storage file_system /data
+}
+
+localhost {
+	reverse_proxy frontend:3000
+}

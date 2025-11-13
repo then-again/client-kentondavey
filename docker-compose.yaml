@@ -1,4 +1,19 @@
 services:
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+      - ./local.Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - kentondavey
+
   frontend:
     build:
       context: .
@@ -11,3 +26,13 @@ services:
       - ./frontend:/app
       - /app/node_modules
     restart: always
+    networks:
+      - kentondavey
+
+volumes:
+  caddy-data:
+  caddy-config:
+
+networks:
+  kentondavey:
+    driver: bridge
