@@ -9,7 +9,6 @@ jobs:
   update-version-tag:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
       contents: write
     outputs:
       new_tag: ${{ steps.set_version.outputs.new_tag }}
@@ -86,5 +85,7 @@ jobs:
   publish:
     needs: update-version-tag
     uses: ./.github/workflows/publish.yaml
+    permissions:
+      packages: write
     with:
       tag: ${{ needs.update-version-tag.outputs.new_tag }}
