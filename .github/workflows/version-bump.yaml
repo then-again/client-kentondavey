@@ -54,7 +54,6 @@ jobs:
         id: set_version
         run: |
           step=${{ steps.get_step.outputs.step }}
-
           previous_tag=${{ steps.get_tag.outputs.previous_tag }}
           IFS='.' read -r major minor patch <<< "$previous_tag"
 
@@ -70,6 +69,7 @@ jobs:
           fi
 
           new_tag="${major}.${minor}.${patch}"
+          
           echo "New tag: $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
