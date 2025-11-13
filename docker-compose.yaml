@@ -10,14 +10,14 @@ services:
     volumes:
       - caddy-data:/data
       - caddy-config:/config
-      - ./local.Caddyfile:/etc/caddy/Caddyfile
+      - ./dev/local.Caddyfile:/etc/caddy/Caddyfile
     networks:
       - kentondavey
 
   frontend:
     build:
       context: .
-      dockerfile: local.Dockerfile
+      dockerfile: ./dev/local.Dockerfile
     container_name: frontend
     image: frontend-kentondavey
     ports:

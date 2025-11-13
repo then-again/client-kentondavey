@@ -4,6 +4,6 @@ ENV NODE_ENV=development
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ .
-COPY local.env .env
+COPY dev/local.env .env
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
