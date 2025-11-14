@@ -6,6 +6,9 @@ on:
       tag:
         required: true
         type: string
+    secrets:
+      PAYLOAD_SECRET:
+        required: true
 
 permissions:
   packages: write

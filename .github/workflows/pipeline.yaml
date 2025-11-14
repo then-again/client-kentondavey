@@ -19,3 +19,5 @@ jobs:
       contents: read
     with:
       tag: ${{ needs.version_bump.outputs.new_tag }}
+    secrets:
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
