@@ -20,10 +20,9 @@ ENV PORT=3000
 RUN corepack enable
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY package.json pnpm-lock.yaml ./
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/payload.config.ts ./payload.config.ts
-COPY --from=builder /app/dist ./dist
+COPY kentondavey.db ./
 
 EXPOSE 3000
 CMD ["pnpm", "start"]
