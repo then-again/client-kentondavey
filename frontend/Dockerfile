@@ -1,21 +1,25 @@
-FROM node:latest AS dependencies
+FROM node:20 AS dependencies
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-FROM node:latest AS builder
+FROM node:20 AS builder
 WORKDIR /app
+RUN corepack enable
+ARG PAYLOAD_SECRET
+ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY ./ .
-RUN npm run build
+COPY . .
+RUN pnpm build
 
-FROM node:latest AS runner
+FROM node:20 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
+RUN corepack enable
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY package*.json ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
+COPY --from=builder /app .
+
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
