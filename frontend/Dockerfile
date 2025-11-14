@@ -21,7 +21,7 @@ RUN corepack enable
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY package.json pnpm-lock.yaml ./
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/payload.config.ts ./payload.config.ts
+COPY --from=builder /app/public ./public
 COPY kentondavey.db ./
 
 EXPOSE 3000
