@@ -17,7 +17,7 @@ jobs:
       - name: Build Docker Image
         run: |
             docker build \
-              --build-arg PAYLOAD_SECRET=dummysecret \
+              --build-arg PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }} \
               -t test-image ./frontend
 
       - name: Test Docker Image
