@@ -1,7 +1,7 @@
 FROM node:latest AS dependencies
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 FROM node:latest AS runner
 WORKDIR /app
