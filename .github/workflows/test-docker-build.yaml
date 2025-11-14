@@ -15,7 +15,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker Image
-        run: docker build -t test-image ./frontend
+        run: docker build \
+            --build-arg PAYLOAD_SECRET=dummysecret \
+            -t test-image ./frontend
 
       - name: Test Docker Image
         run: |

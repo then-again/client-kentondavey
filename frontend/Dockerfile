@@ -7,6 +7,8 @@ RUN pnpm install --frozen-lockfile
 FROM node:20 AS builder
 WORKDIR /app
 RUN corepack enable
+ARG PAYLOAD_SECRET
+ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build
