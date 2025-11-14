@@ -75,7 +75,7 @@
     "@tailwindcss/typography": "^0.5.12",
     "@testing-library/react": "16.3.0",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "22.5.4",
+    "@types/node": "24.0.0",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",
     "@vercel/git-hooks": "^1.0.0",
