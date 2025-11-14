@@ -42,7 +42,7 @@ export default buildConfig({
   collections: [Users, Pages, Categories, Media],
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URI || '',
+    url: process.env.DATABASE_URI || `file:${path.resolve('./kentondavey.db')}`,
     },
   }),
   editor: lexicalEditor({
